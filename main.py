@@ -1,39 +1,44 @@
 import re
 
-# open the file for reading
-# iterate through file to find skus
-# skus are determined by an unbroken string of numbers separated by a space or a common or both like: "12345678, 123456789 987654321"
-# I will use regex to parse out skus
-# if a line has no numbers, go to the next line to keep checking until end of file
-# format them and add them to a list_one
-# strip any commas, padded zeros (like 0012345678), unnecessary spaces
-list_one = []
+def extract_skus():
+    raw_sku_list = []
 
-with open("input.txt", "r") as file:
-    for line in file:
-        x = re.findall(r"\d*", line) # "\d" means decimal digits and "*" means 0 or more times
-        for sku in x:
-            print(re.findall(r"\A0*", sku)) # "\A" means matching any 0s                    #check re.sub and ^ tomorrow to kick out leading zeros before adding them to the list_one
-            list_one.append(sku)
+    with open("input.txt", "r") as file:
+        for line in file:
+            raw_skus = re.findall(r"\d+", line) # "\d" means decimal digits and "+" means 1 or more times
+            for sku in raw_skus:
+                raw_sku_list.append(sku)
+    
+    return raw_sku_list
 
-print("\nlist_one:")    
-print(list_one)
+def format_skus(raw_sku_list):
+    formatted_sku_list = []
 
-# dedupe the list into a set
-# iterate through the list adding a new sku to a set, for every sku in the original list, check it against what's been added to the new, deduped set. If it already exits, its a dupe and doesn't need to be added. 
+    for raw_sku in raw_sku_list:
+        stripped_sku = re.sub('^0+', '', raw_sku) # ^ means starts with 0 and replaces it with nothing (stripping the zeros)
+        if stripped_sku == '':
+            continue
+        else:
+            formatted_sku_list.append(stripped_sku)
 
-# put the deduped set into a list_two with the single quotes added to each entry
+    deduped_sku_set = set(formatted_sku_list) # sets are unordered, unchangable, unidexible. They also don't allow duplicates hence why this works
 
-# feed list_two to .join() to add ending commas except the last entry
+    deduped_sku_list = []
 
-# open the file for writing
+    deduped_sku_list.extend(deduped_sku_set)
 
-# write to the file with formatted skus in a column with added formatting
-# each sku should be on its own line surround by 's and a common at the end
-# the last entry should not have a comma
-# like:
-# '12345678', 
-# '123456789', 
-# '987654321'
+    return deduped_sku_list
 
-# close file
+def write_skus(deduped_sku_list):
+    with open("input.txt", "w") as file:
+        for index, sku in enumerate(deduped_sku_list):
+            formatted_sku = (f"'{sku}'")
+            if index < len(deduped_sku_list) - 1:
+                file.write(f"{formatted_sku},\n")
+            else:
+                file.write(formatted_sku)
+
+if __name__ == "__main__":
+    raw = extract_skus()
+    formatted = format_skus(raw)
+    write_skus(formatted)
