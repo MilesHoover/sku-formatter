@@ -1,12 +1,11 @@
-import argparse, re
+import re
 
-def get_file_name():
-    parser = argparse.ArgumentParser(prog="column-formatter", description="A program to format SKUs")
-    parser.add_argument('file_name', help="The name of the text file containing skus to format")
-    args = parser.parse_args()
-    file_name = args.file_name
+def driver(file_name):
+    raw = extract_skus(file_name)
+    formatted = format_skus(raw)
+    write_skus(formatted, file_name)
 
-    return file_name
+    return formatted
 
 def extract_skus(file_name):
     raw_sku_list = []
@@ -46,9 +45,3 @@ def write_skus(deduped_sku_list, file_name):
             else:
                 file.write(formatted_sku)
     print("Format complete")
-
-if __name__ == "__main__":
-    file_name = get_file_name()
-    raw = extract_skus(file_name)
-    formatted = format_skus(raw)
-    write_skus(formatted, file_name)

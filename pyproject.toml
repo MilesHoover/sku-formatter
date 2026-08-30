@@ -1,0 +1,13 @@
+[project]
+name="sku-formatter"
+version="1.0.0"
+
+[build-system]
+requires=["setuptools"]
+build-backend="setuptools.build_meta"
+
+[project.scripts]
+skuf="sku_formatter.__main__:main"
+
+[tool.setuptools.packages.find]
+where=["src"]
