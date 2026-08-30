@@ -1,5 +1,5 @@
 [project]
-name="sku-formatter"
+name="sku_formatter"
 version="1.0.0"
 
 [build-system]
@@ -11,3 +11,8 @@ skuf="sku_formatter.__main__:main"
 
 [tool.setuptools.packages.find]
 where=["src"]
+
+[tool.pytest.ini_options]
+addopts=[
+    "--import-mode=importlib",
+]
