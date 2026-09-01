@@ -28,11 +28,9 @@ def format_skus(raw_sku_list):
         else:
             formatted_sku_list.append(stripped_sku)
 
-    deduped_sku_set = set(formatted_sku_list) # sets are unordered, unchangable, unidexible. They also don't allow duplicates hence why this works
+    deduped_sku_dictionary = dict.fromkeys(formatted_sku_list, 0) # dictionaries dedupe and keep order
 
-    deduped_sku_list = []
-
-    deduped_sku_list.extend(deduped_sku_set)
+    deduped_sku_list = list(deduped_sku_dictionary.keys())
 
     return deduped_sku_list
 
