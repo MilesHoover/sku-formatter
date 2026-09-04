@@ -23,6 +23,11 @@ def input_file(tmp_path_factory):
 def test_extract_skus(input_file):
     assert sku_formatter.extract_skus(input_file) == ["21341234", "040124109491", "000102341234", "241234", "2134234", "21341234"]
 
+def test_extract_skus_no_digits(tmp_path):
+    no_digits_input = tmp_path / "no_digits_input.txt"
+    no_digits_input.write_text("")
+    assert sku_formatter.extract_skus(no_digits_input) == []
+
 @pytest.fixture(scope="session")
 def write_skus_input_file(tmp_path_factory):
     directory = tmp_path_factory.mktemp("directory")
@@ -31,4 +36,26 @@ def write_skus_input_file(tmp_path_factory):
 
 def test_write_skus(write_skus_input_file):
     sku_formatter.write_skus(["21341234", "40124109491", "102341234", "241234", "2134234"], write_skus_input_file) 
-    assert write_skus_input_file.read_text() == f"'21341234',\n'40124109491',\n'102341234',\n'241234',\n'2134234'"
+    assert write_skus_input_file.read_text() == "'21341234',\n'40124109491',\n'102341234',\n'241234',\n'2134234'"
+
+def test_write_skus_empty_list(tmp_path):
+    write_skus_input = tmp_path / "write_skus_input.txt"
+    sku_formatter.write_skus([], write_skus_input)
+    assert write_skus_input.read_text() == ""
+
+def test_driver(tmp_path):
+    # directory = tmp_path / "directory"
+    # directory.mkdir()
+    driver_input = tmp_path / "driver_input.txt"
+    driver_input.write_text("""
+        94812370, 0041234736 --comment #123#
+        
+        94812370 --this should be deduped!!
+        0091912y923444_
+        
+        
+        fasdfasdf a3123412341234 ffff 312341234fjf
+        """
+    )
+    sku_formatter.driver(driver_input)
+    assert driver_input.read_text() == "'94812370',\n'41234736',\n'123',\n'91912',\n'923444',\n'3123412341234',\n'312341234'"
